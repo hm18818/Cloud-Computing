@@ -2,7 +2,10 @@ import streamlit as st
 from typing import Tuple
 import pandas as pd
 import datetime
+import openai
+import os
 
+# Expanded keyword-category-email-URL mapping based on full document
 CATEGORY_KEYWORDS = {
     "Railway Concession Pass": {
         "keywords": ["railway pass", "railway concession"],
@@ -113,7 +116,6 @@ def classify_query(query: str) -> Tuple[str, str, str, str]:
         url = CATEGORY_KEYWORDS[best_category].get("url")
         matched_keywords = ", ".join(keyword_map[best_category])
 
-        # Show all matched categories (for transparency only)
         st.subheader("🔎 Matching Categories")
         for cat, count in sorted(match_scores.items(), key=lambda x: -x[1]):
             words = ", ".join(keyword_map[cat])
@@ -121,77 +123,25 @@ def classify_query(query: str) -> Tuple[str, str, str, str]:
 
         return best_category, email, url, matched_keywords
 
-    return "Other", CATEGORY_KEYWORDS["Other"]["email"], CATEGORY_KEYWORDS["Other"]["url"], ""
+    # Semantic fallback using OpenAI
+    openai.api_key = st.secrets["OPENAI_API_KEY"]
+    categories = list(CATEGORY_KEYWORDS.keys())
+    try:
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": "You are an assistant that classifies student queries based on department."},
+                {"role": "user", "content": f"Given the following categories: {categories}.\nClassify this query: {query}"}
+            ],
+            temperature=0.2,
+        )
+        best_category = response["choices"][0]["message"]["content"].strip()
+        if best_category not in CATEGORY_KEYWORDS:
+            best_category = "Other"
+    except Exception as e:
+        st.warning("Semantic fallback failed. Using default.")
+        best_category = "Other"
 
-def generate_email_to_student(query: str, category: str, email: str) -> str:
-    return f"""
-Dear Student,
-
-Thank you for reaching out with your concern:
-
-> {query.strip()}
-
-After reviewing your query, it is recommended that you contact the respective department at: {email}
-
-Feel free to let me know if you need any further help.
-
-Regards,
-Mentor
-"""
-
-def main():
-    st.set_page_config(page_title="KIIT Query Router", layout="centered")
-    st.title("📩 KIIT Mentee Query Email Routing Tool")
-    st.write("Classify a mentee's query and get department email, link, and a ready-to-send response.")
-
-    with st.expander("🗂 Upload CSV of Queries"):
-        csv_file = st.file_uploader("Upload a CSV file with a 'Query' column", type="csv")
-        if csv_file:
-            df = pd.read_csv(csv_file)
-            if "Query" in df.columns:
-                results = []
-                for query in df["Query"]:
-                    category, email, url, keyword = classify_query(query)
-                    results.append({
-                        "Query": query,
-                        "Category": category,
-                        "Email": email,
-                        "Matched Keyword": keyword,
-                        "URL": url
-                    })
-                result_df = pd.DataFrame(results)
-                st.dataframe(result_df)
-                st.download_button("Download Classified CSV", result_df.to_csv(index=False), "classified_queries.csv")
-            else:
-                st.error("CSV must contain a column titled 'Query'.")
-
-    st.subheader("🔍 Classify Individual Query")
-    query = st.text_area("Enter the query from student:", height=150)
-
-    if st.button("Classify and Suggest"):
-        if query.strip():
-            category, email, url, keyword = classify_query(query)
-            timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            history.append({"Timestamp": timestamp, "Query": query, "Category": category, "Email": email, "Keyword": keyword})
-            st.success(f"📌 Category: {category}")
-            if keyword:
-                st.caption(f"🔍 Matched on: '{keyword}'")
-            if email:
-                st.info(f"📧 Email ID: `{email}`")
-            if url:
-                st.markdown(f"🔗 [Useful Link]({url})" if url.startswith("http") else f"📞 Contact Info: {url}")
-            st.subheader("📩 Ready-to-Copy Reply Email")
-            st.text_area("Email Draft:", generate_email_to_student(query, category, email), height=200)
-        else:
-            st.warning("Please enter a valid query.")
-
-    with st.expander("📜 Session History"):
-        if history:
-            hist_df = pd.DataFrame(history)
-            st.dataframe(hist_df)
-            st.download_button("Download History", hist_df.to_csv(index=False), "query_history.csv")
-        else:
-            st.info("No queries classified yet.")
-
-if __name__ == "__main__":
-    main()
+    email = CATEGORY_KEYWORDS[best_category].get("email", "Not listed")
+    url = CATEGORY_KEYWORDS[best_category].get("url")
+    return best_category, email, url, "semantic"
