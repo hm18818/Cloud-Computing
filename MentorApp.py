@@ -1,10 +1,10 @@
 import streamlit as st
 from typing import Tuple
 
-# Define keyword-category-email-URL mapping
+# Define keyword-category-email-URL mapping (updated with detailed PoC list)
 CATEGORY_KEYWORDS = {
     "Bonafide Certificate": {
-        "keywords": ["bonafide", "education loan", "scholarship", "passport", "higher studies"],
+        "keywords": ["bonafide", "education loan", "course continuing", "passport", "higher studies"],
         "email": "compliance.cse@kiit.ac.in",
         "url": None
     },
@@ -18,6 +18,16 @@ CATEGORY_KEYWORDS = {
         "email": "compliance.cse@kiit.ac.in",
         "url": None
     },
+    "Rank Certificate/No Backlog": {
+        "keywords": ["rank certificate", "no backlog"],
+        "email": "compliance.cse@kiit.ac.in",
+        "url": None
+    },
+    "Registration Card": {
+        "keywords": ["registration card"],
+        "email": None,
+        "url": "Tel: 8144967820 (Mrs. Tunalata Nayak)"
+    },
     "Marks Discrepancy (2022-2023, MTech, PhD)": {
         "keywords": ["marks", "grade", "answer sheet", "btech 2022", "btech 2023", "mtech", "phd"],
         "email": "acoe.cese@kiit.ac.in",
@@ -28,75 +38,115 @@ CATEGORY_KEYWORDS = {
         "email": "acoe.csit@kiit.ac.in",
         "url": None
     },
-    "Fee/Payment Issues": {
-        "keywords": ["fee", "payment", "refund", "receipt", "sap update"],
-        "email": "manoj.meher@kiit.ac.in",
+    "Admission Issues": {
+        "keywords": ["name correction", "dob", "address change", "scholarship issue"],
+        "email": "swapna.mohanty@kiit.ac.in",
         "url": None
     },
-    "Admission Related": {
-        "keywords": ["name correction", "dob", "address change", "scholarship issue", "demand letter"],
+    "Extension for Fee Payment": {
+        "keywords": ["extension", "academic fee", "hostel fee"],
+        "email": "director.admission@kiit.ac.in",
+        "url": None
+    },
+    "Loan Demand Letter": {
+        "keywords": ["demand letter"],
         "email": "admission@kiit.ac.in",
         "url": None
     },
-    "Hostel": {
-        "keywords": ["hostel", "room", "warden", "accommodation"],
-        "email": "hostel@kiit.ac.in",
-        "url": "https://kiit.ac.in/code-of-conduct-of-boarders/"
-    },
-    "Laptop/Technical Faults": {
+    "Laptop Issues": {
         "keywords": ["laptop", "delivery", "technical fault"],
         "email": "laptop.service@kiit.ac.in",
         "url": None
     },
-    "IT Support/Portal": {
-        "keywords": ["email id", "portal", "login", "technical", "password"],
+    "Email Group ID": {
+        "keywords": ["email group"],
         "email": "helpdesk@kiit.ac.in",
         "url": None
     },
-    "Library": {
+    "Library Access": {
         "keywords": ["library", "book", "access", "fine"],
         "email": "beda_sahoo@kiit.ac.in",
         "url": None
     },
-    "Placement/Internship": {
-        "keywords": ["placement", "internship", "training", "noc"],
+    "Fee Discrepancy": {
+        "keywords": ["fee", "sap update"],
+        "email": "manoj.meher@kiit.ac.in",
+        "url": None
+    },
+    "Hostel Matters": {
+        "keywords": ["hostel", "room", "accommodation"],
+        "email": "hostel@kiit.ac.in",
+        "url": "https://kiit.ac.in/code-of-conduct-of-boarders/"
+    },
+    "Training & Placement": {
+        "keywords": ["placement", "internship", "training"],
         "email": "tnp.scs@kiit.ac.in",
         "url": None
     },
-    "Sports/Yoga": {
-        "keywords": ["sports", "recreational", "yoga", "fitness"],
-        "email": "rashmi.pradhan@kiit.ac.in",
+    "Sports Access": {
+        "keywords": ["sports", "recreational", "fitness"],
+        "email": "sports.kiit@gmail.com",
         "url": "https://kiit.ac.in/campuslife/sports/"
     },
-    "Student Activity/Clubs": {
-        "keywords": ["student club", "activity", "ksac"],
-        "email": "studentssupport@kiit.ac.in",
+    "Student Activities": {
+        "keywords": ["activity", "club", "ksac"],
+        "email": "shyam.behura@kids.ac.in",
         "url": "https://ksac.kiit.ac.in/"
     },
-    "Guest House": {
-        "keywords": ["guest house booking"],
+    "Grade Sheet Download": {
+        "keywords": ["grade sheet", "download"],
+        "email": "slcm.kiit@kiit.ac.in",
+        "url": None
+    },
+    "Guest House Booking": {
+        "keywords": ["guest house"],
         "email": "kiitguesthouse@kiit.ac.in",
         "url": None
     },
-    "Counselling/Mental Health": {
-        "keywords": ["counselling", "mental health", "stress"],
+    "Mentorship": {
+        "keywords": ["mentor", "tutor mentor"],
+        "email": None,
+        "url": "https://kiit.ac.in/sap/know-your-mentor/"
+    },
+    "Counselling": {
+        "keywords": ["counselling", "mental health"],
         "email": "student.counselling@kiit.ac.in",
         "url": "https://kiit.ac.in/student-counselling/"
+    },
+    "Online Counselling Support": {
+        "keywords": ["online counselling", "kiit care"],
+        "email": None,
+        "url": "https://kiitportal.kiituniversity.net/irj/portal/"
+    },
+    "Cyber Helpdesk": {
+        "keywords": ["cyber", "online fraud"],
+        "email": "cyber.helpline@kiit.ac.in",
+        "url": None
+    },
+    "SAP Help": {
+        "keywords": ["sap", "student portal"],
+        "email": "helpdesksap.eam@kiit.ac.in",
+        "url": None
+    },
+    "Career Support": {
+        "keywords": ["career counselling", "placement support"],
+        "email": "placement@kiit.ac.in",
+        "url": None
     },
     "Grievance": {
         "keywords": ["grievance", "complaint"],
         "email": "grievance.psp@kiit.ac.in",
         "url": "https://kiit.ac.in/grievance/"
     },
-    "Cyber Security": {
-        "keywords": ["cyber", "online fraud", "cybersecurity"],
-        "email": "cyber.helpline@kiit.ac.in",
-        "url": None
+    "Internal Complaint": {
+        "keywords": ["sexual harassment", "icc", "internal complaint"],
+        "email": None,
+        "url": "https://kiit.ac.in/internal-complaint-committee/"
     },
-    "SAP Portal Help": {
-        "keywords": ["sap", "student profile", "academic portal"],
-        "email": "helpdesksap.eam@kiit.ac.in",
-        "url": None
+    "Anti Ragging": {
+        "keywords": ["ragging", "anti ragging"],
+        "email": None,
+        "url": "https://kiit.ac.in/antiragging/"
     },
     "Other": {
         "keywords": [],
@@ -110,7 +160,7 @@ def classify_query(query: str) -> Tuple[str, str, str]:
     for category, data in CATEGORY_KEYWORDS.items():
         for keyword in data["keywords"]:
             if keyword in query_lower:
-                return category, data["email"], data["url"]
+                return category, data.get("email", "Not listed"), data.get("url")
     return "Other", CATEGORY_KEYWORDS["Other"]["email"], CATEGORY_KEYWORDS["Other"]["url"]
 
 def main():
@@ -124,9 +174,10 @@ def main():
         if query.strip():
             category, email, url = classify_query(query)
             st.success(f"**Category Identified:** {category}")
-            st.info(f"**Recommended Email ID:** `{email}`")
+            if email:
+                st.info(f"**Recommended Email ID:** `{email}`")
             if url:
-                st.markdown(f"**Useful Link:** [Click here]({url})")
+                st.markdown(f"**Useful Link or Info:** [Click here]({url})" if url.startswith("http") else f"**Contact Info:** {url}")
         else:
             st.warning("Please enter a query to classify.")
 
