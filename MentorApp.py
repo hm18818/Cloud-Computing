@@ -29,7 +29,7 @@ CATEGORY_KEYWORDS = {
         "url": "Tel: 8144967820 (Mrs. Tunalata Nayak)"
     },
     "Marks Discrepancy (2022-2023, MTech, PhD)": {
-        "keywords": ["marks", "grade", "answer sheet", "btech 2022", "btech 2023", "mtech", "phd"],
+        "keywords": ["marks", "grade", "answer sheet", "btech 2022", "btech 2023", "mtech", "phd", "backlog"],
         "email": "acoe.cese@kiit.ac.in",
         "url": None
     },
