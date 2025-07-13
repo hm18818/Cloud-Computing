@@ -3,7 +3,7 @@ from typing import Tuple
 import pandas as pd
 import datetime
 
-# Keyword-category-email-URL mapping (includes all categories)
+# Expanded keyword-category-email-URL mapping based on full document
 CATEGORY_KEYWORDS = {
     "Railway Concession Pass": {
         "keywords": ["railway pass", "railway concession"],
