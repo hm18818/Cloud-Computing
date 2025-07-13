@@ -3,7 +3,6 @@ from typing import Tuple
 import pandas as pd
 import datetime
 
-# Expanded keyword-category-email-URL mapping based on full document
 CATEGORY_KEYWORDS = {
     "Railway Concession Pass": {
         "keywords": ["railway pass", "railway concession"],
@@ -96,16 +95,36 @@ history = []
 
 def classify_query(query: str) -> Tuple[str, str, str, str]:
     query_lower = query.lower()
-    matched_keyword = ""
+    match_scores = {}
+    keyword_map = {}
+
     for category, data in CATEGORY_KEYWORDS.items():
+        match_count = 0
         for keyword in data["keywords"]:
             if keyword in query_lower:
-                matched_keyword = keyword
-                return category, data.get("email", "Not listed"), data.get("url"), matched_keyword
+                match_count += 1
+                keyword_map[category] = keyword_map.get(category, []) + [keyword]
+        if match_count > 0:
+            match_scores[category] = match_count
+
+    if match_scores:
+        best_category = max(match_scores, key=match_scores.get)
+        email = CATEGORY_KEYWORDS[best_category].get("email", "Not listed")
+        url = CATEGORY_KEYWORDS[best_category].get("url")
+        matched_keywords = ", ".join(keyword_map[best_category])
+
+        # Show all matched categories (for transparency only)
+        st.subheader("🔎 Matching Categories")
+        for cat, count in sorted(match_scores.items(), key=lambda x: -x[1]):
+            words = ", ".join(keyword_map[cat])
+            st.markdown(f"**{cat}** — {count} match(es) → _{words}_")
+
+        return best_category, email, url, matched_keywords
+
     return "Other", CATEGORY_KEYWORDS["Other"]["email"], CATEGORY_KEYWORDS["Other"]["url"], ""
 
 def generate_email_to_student(query: str, category: str, email: str) -> str:
-    email_body = f"""
+    return f"""
 Dear Student,
 
 Thank you for reaching out with your concern:
@@ -119,7 +138,6 @@ Feel free to let me know if you need any further help.
 Regards,
 Mentor
 """
-    return email_body
 
 def main():
     st.set_page_config(page_title="KIIT Query Router", layout="centered")
@@ -162,7 +180,6 @@ def main():
                 st.info(f"📧 Email ID: `{email}`")
             if url:
                 st.markdown(f"🔗 [Useful Link]({url})" if url.startswith("http") else f"📞 Contact Info: {url}")
-
             st.subheader("📩 Ready-to-Copy Reply Email")
             st.text_area("Email Draft:", generate_email_to_student(query, category, email), height=200)
         else:
