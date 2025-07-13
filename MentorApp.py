@@ -1,152 +1,89 @@
 import streamlit as st
 from typing import Tuple
+import pandas as pd
+import datetime
 
-# Define keyword-category-email-URL mapping (updated with detailed PoC list)
+# Keyword-category-email-URL mapping (includes all categories)
 CATEGORY_KEYWORDS = {
-    "Bonafide Certificate": {
-        "keywords": ["bonafide", "education loan", "course continuing", "passport", "higher studies"],
+    "Railway Concession Pass": {
+        "keywords": ["railway pass", "railway concession"],
         "email": "compliance.cse@kiit.ac.in",
         "url": None
     },
-    "Grade/Provisional Certificates": {
-        "keywords": ["grade report", "provisional degree", "degree certificate", "conduct certificate", "college leaving"],
+    "Head Signature on Application Form": {
+        "keywords": ["gate form", "cat form", "application signature"],
         "email": "compliance.cse@kiit.ac.in",
         "url": None
     },
-    "Elective Queries": {
-        "keywords": ["elective", "open elective", "department elective"],
-        "email": "compliance.cse@kiit.ac.in",
-        "url": None
-    },
-    "Rank Certificate/No Backlog": {
-        "keywords": ["rank certificate", "no backlog"],
-        "email": "compliance.cse@kiit.ac.in",
-        "url": None
-    },
-    "Registration Card": {
-        "keywords": ["registration card"],
-        "email": None,
-        "url": "Tel: 8144967820 (Mrs. Tunalata Nayak)"
-    },
-    "Marks Discrepancy (2022-2023, MTech, PhD)": {
-        "keywords": ["marks", "grade", "answer sheet", "btech 2022", "btech 2023", "mtech", "phd"],
-        "email": "acoe.cese@kiit.ac.in",
-        "url": None
-    },
-    "Marks Discrepancy (2024-2025)": {
-        "keywords": ["marks", "grade", "answer sheet", "btech 2024", "btech 2025"],
-        "email": "acoe.csit@kiit.ac.in",
-        "url": None
-    },
-    "Admission Issues": {
-        "keywords": ["name correction", "dob", "address change", "scholarship issue"],
-        "email": "swapna.mohanty@kiit.ac.in",
-        "url": None
-    },
-    "Extension for Fee Payment": {
-        "keywords": ["extension", "academic fee", "hostel fee"],
-        "email": "director.admission@kiit.ac.in",
-        "url": None
-    },
-    "Loan Demand Letter": {
-        "keywords": ["demand letter"],
-        "email": "admission@kiit.ac.in",
-        "url": None
-    },
-    "Laptop Issues": {
-        "keywords": ["laptop", "delivery", "technical fault"],
-        "email": "laptop.service@kiit.ac.in",
-        "url": None
-    },
-    "Email Group ID": {
-        "keywords": ["email group"],
+    "Email Group ID Issue": {
+        "keywords": ["email group id", "not receiving emails"],
         "email": "helpdesk@kiit.ac.in",
         "url": None
     },
     "Library Access": {
-        "keywords": ["library", "book", "access", "fine"],
+        "keywords": ["library access", "library book", "library fine"],
         "email": "beda_sahoo@kiit.ac.in",
         "url": None
     },
-    "Fee Discrepancy": {
-        "keywords": ["fee", "sap update"],
+    "Fee & SAP Issues": {
+        "keywords": ["fee discrepancy", "sap update", "payment issue"],
         "email": "manoj.meher@kiit.ac.in",
         "url": None
     },
-    "Hostel Matters": {
-        "keywords": ["hostel", "room", "accommodation"],
-        "email": "hostel@kiit.ac.in",
-        "url": "https://kiit.ac.in/code-of-conduct-of-boarders/"
-    },
-    "Training & Placement": {
-        "keywords": ["placement", "internship", "training"],
-        "email": "tnp.scs@kiit.ac.in",
-        "url": None
-    },
-    "Sports Access": {
-        "keywords": ["sports", "recreational", "fitness"],
-        "email": "sports.kiit@gmail.com",
-        "url": "https://kiit.ac.in/campuslife/sports/"
-    },
-    "Student Activities": {
-        "keywords": ["activity", "club", "ksac"],
-        "email": "shyam.behura@kids.ac.in",
+    "Student Activity Centre": {
+        "keywords": ["student club", "extracurricular activity"],
+        "email": "studentssupport@kiit.ac.in",
         "url": "https://ksac.kiit.ac.in/"
     },
-    "Grade Sheet Download": {
-        "keywords": ["grade sheet", "download"],
-        "email": "slcm.kiit@kiit.ac.in",
-        "url": None
-    },
-    "Guest House Booking": {
-        "keywords": ["guest house"],
-        "email": "kiitguesthouse@kiit.ac.in",
-        "url": None
-    },
-    "Mentorship": {
-        "keywords": ["mentor", "tutor mentor"],
-        "email": None,
-        "url": "https://kiit.ac.in/sap/know-your-mentor/"
-    },
-    "Counselling": {
-        "keywords": ["counselling", "mental health"],
-        "email": "student.counselling@kiit.ac.in",
-        "url": "https://kiit.ac.in/student-counselling/"
-    },
-    "Online Counselling Support": {
-        "keywords": ["online counselling", "kiit care"],
-        "email": None,
-        "url": "https://kiitportal.kiituniversity.net/irj/portal/"
-    },
-    "Cyber Helpdesk": {
-        "keywords": ["cyber", "online fraud"],
-        "email": "cyber.helpline@kiit.ac.in",
-        "url": None
-    },
-    "SAP Help": {
-        "keywords": ["sap", "student portal"],
-        "email": "helpdesksap.eam@kiit.ac.in",
-        "url": None
-    },
-    "Career Support": {
-        "keywords": ["career counselling", "placement support"],
-        "email": "placement@kiit.ac.in",
-        "url": None
-    },
-    "Grievance": {
-        "keywords": ["grievance", "complaint"],
+    "Grievance Helpdesk": {
+        "keywords": ["grievance", "student complaint"],
         "email": "grievance.psp@kiit.ac.in",
         "url": "https://kiit.ac.in/grievance/"
     },
-    "Internal Complaint": {
-        "keywords": ["sexual harassment", "icc", "internal complaint"],
+    "Guest House Booking": {
+        "keywords": ["guest house", "stay request"],
+        "email": "kiitguesthouse@kiit.ac.in",
+        "url": None
+    },
+    "Anti Ragging Committee": {
+        "keywords": ["ragging", "anti ragging", "bullying"],
+        "email": None,
+        "url": "https://kiit.ac.in/antiragging/"
+    },
+    "Internal Complaint Committee": {
+        "keywords": ["sexual harassment", "internal complaint"],
         "email": None,
         "url": "https://kiit.ac.in/internal-complaint-committee/"
     },
-    "Anti Ragging": {
-        "keywords": ["ragging", "anti ragging"],
+    "Cyber Helpdesk": {
+        "keywords": ["cyber crime", "online fraud"],
+        "email": "cyber.helpline@kiit.ac.in",
+        "url": None
+    },
+    "SAP Helpdesk": {
+        "keywords": ["sap help", "student portal issue"],
+        "email": "helpdesksap.eam@kiit.ac.in",
+        "url": None
+    },
+    "Counselling Services": {
+        "keywords": ["counselling", "mental support", "stress", "anxiety"],
+        "email": "student.counselling@kiit.ac.in",
+        "url": "https://kiit.ac.in/student-counselling/"
+    },
+    "Career & Placement Support": {
+        "keywords": ["career support", "job placement", "internship"],
+        "email": "placement@kiit.ac.in",
+        "url": None
+    },
+    "Sports & Fitness": {
+        "keywords": ["sports", "fitness", "yoga"],
+        "email": "rashmi.pradhan@kiit.ac.in",
+        "url": "https://kiit.ac.in/campuslife/sports/"
+    },
+    "Mentorship": {
+        "keywords": ["tutor mentor", "know your mentor"],
         "email": None,
-        "url": "https://kiit.ac.in/antiragging/"
+        "url": "https://kiit.ac.in/sap/know-your-mentor/"
     },
     "Other": {
         "keywords": [],
@@ -155,49 +92,89 @@ CATEGORY_KEYWORDS = {
     }
 }
 
-def classify_query(query: str) -> Tuple[str, str, str]:
+history = []
+
+def classify_query(query: str) -> Tuple[str, str, str, str]:
     query_lower = query.lower()
+    matched_keyword = ""
     for category, data in CATEGORY_KEYWORDS.items():
         for keyword in data["keywords"]:
             if keyword in query_lower:
-                return category, data.get("email", "Not listed"), data.get("url")
-    return "Other", CATEGORY_KEYWORDS["Other"]["email"], CATEGORY_KEYWORDS["Other"]["url"]
+                matched_keyword = keyword
+                return category, data.get("email", "Not listed"), data.get("url"), matched_keyword
+    return "Other", CATEGORY_KEYWORDS["Other"]["email"], CATEGORY_KEYWORDS["Other"]["url"], ""
 
 def generate_email_to_student(query: str, category: str, email: str) -> str:
     email_body = f"""
 Dear Student,
 
 Thank you for reaching out with your concern:
+
+> {query.strip()}
+
+After reviewing your query, it is recommended that you contact the respective department at: {email}
+
+Feel free to let me know if you need any further help.
+
+Regards,
+Mentor
 """
-    email_body += f"\n\n> {query.strip()}\n\n"
-    if email:
-        email_body += f"After reviewing your query, it is recommended that you contact the respective department at: {email}\n"
-    else:
-        email_body += "Based on the nature of your concern, please refer to the appropriate point of contact mentioned in the student handbook.\n"
-    email_body += "\nFeel free to let me know if you need any further help.\n\nRegards,\nMentor"
     return email_body
 
 def main():
-    st.set_page_config(page_title="Mentee Query Router", layout="centered")
+    st.set_page_config(page_title="KIIT Query Router", layout="centered")
     st.title("📩 KIIT Mentee Query Email Routing Tool")
-    st.write("Classify a mentee's query and get the right email contact, resource link, and a ready-to-copy reply email.")
+    st.write("Classify a mentee's query and get department email, link, and a ready-to-send response.")
 
-    query = st.text_area("Enter Mentee's Query or Complaint", height=150)
+    with st.expander("🗂 Upload CSV of Queries"):
+        csv_file = st.file_uploader("Upload a CSV file with a 'Query' column", type="csv")
+        if csv_file:
+            df = pd.read_csv(csv_file)
+            if "Query" in df.columns:
+                results = []
+                for query in df["Query"]:
+                    category, email, url, keyword = classify_query(query)
+                    results.append({
+                        "Query": query,
+                        "Category": category,
+                        "Email": email,
+                        "Matched Keyword": keyword,
+                        "URL": url
+                    })
+                result_df = pd.DataFrame(results)
+                st.dataframe(result_df)
+                st.download_button("Download Classified CSV", result_df.to_csv(index=False), "classified_queries.csv")
+            else:
+                st.error("CSV must contain a column titled 'Query'.")
 
-    if st.button("Classify and Suggest Contact"):
+    st.subheader("🔍 Classify Individual Query")
+    query = st.text_area("Enter the query from student:", height=150)
+
+    if st.button("Classify and Suggest"):
         if query.strip():
-            category, email, url = classify_query(query)
-            st.success(f"**Category Identified:** {category}")
+            category, email, url, keyword = classify_query(query)
+            timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            history.append({"Timestamp": timestamp, "Query": query, "Category": category, "Email": email, "Keyword": keyword})
+            st.success(f"📌 Category: {category}")
+            if keyword:
+                st.caption(f"🔍 Matched on: '{keyword}'")
             if email:
-                st.info(f"**Recommended Email ID:** `{email}`")
+                st.info(f"📧 Email ID: `{email}`")
             if url:
-                st.markdown(f"**Useful Link or Info:** [Click here]({url})" if url.startswith("http") else f"**Contact Info:** {url}")
+                st.markdown(f"🔗 [Useful Link]({url})" if url.startswith("http") else f"📞 Contact Info: {url}")
 
-            st.subheader("📩 Ready-to-Copy Email to Student")
-            reply = generate_email_to_student(query, category, email)
-            st.code(reply, language='text')
+            st.subheader("📩 Ready-to-Copy Reply Email")
+            st.text_area("Email Draft:", generate_email_to_student(query, category, email), height=200)
         else:
-            st.warning("Please enter a query to classify.")
+            st.warning("Please enter a valid query.")
+
+    with st.expander("📜 Session History"):
+        if history:
+            hist_df = pd.DataFrame(history)
+            st.dataframe(hist_df)
+            st.download_button("Download History", hist_df.to_csv(index=False), "query_history.csv")
+        else:
+            st.info("No queries classified yet.")
 
 if __name__ == "__main__":
     main()
