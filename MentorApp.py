@@ -29,7 +29,7 @@ CATEGORY_KEYWORDS = {
         "url": "Tel: 8144967820 (Mrs. Tunalata Nayak)"
     },
     "Marks Discrepancy (2022-2023, MTech, PhD)": {
-        "keywords": ["marks", "grade", "answer sheet", "btech 2022", "btech 2023", "mtech", "phd", "backlog"],
+        "keywords": ["marks", "grade", "answer sheet", "btech 2022", "btech 2023", "mtech", "phd"],
         "email": "acoe.cese@kiit.ac.in",
         "url": None
     },
@@ -163,10 +163,24 @@ def classify_query(query: str) -> Tuple[str, str, str]:
                 return category, data.get("email", "Not listed"), data.get("url")
     return "Other", CATEGORY_KEYWORDS["Other"]["email"], CATEGORY_KEYWORDS["Other"]["url"]
 
+def generate_email_to_student(query: str, category: str, email: str) -> str:
+    email_body = f"""
+Dear Student,
+
+Thank you for reaching out with your concern:
+"""
+    email_body += f"\n\n> {query.strip()}\n\n"
+    if email:
+        email_body += f"After reviewing your query, it is recommended that you contact the respective department at: {email}\n"
+    else:
+        email_body += "Based on the nature of your concern, please refer to the appropriate point of contact mentioned in the student handbook.\n"
+    email_body += "\nFeel free to let me know if you need any further help.\n\nRegards,\nMentor"
+    return email_body
+
 def main():
     st.set_page_config(page_title="Mentee Query Router", layout="centered")
-    st.title("\U0001F4E9 KIIT Mentee Query Email Routing Tool")
-    st.write("Classify a mentee's query and get the right email contact and resource link.")
+    st.title("📩 KIIT Mentee Query Email Routing Tool")
+    st.write("Classify a mentee's query and get the right email contact, resource link, and a ready-to-copy reply email.")
 
     query = st.text_area("Enter Mentee's Query or Complaint", height=150)
 
@@ -178,6 +192,10 @@ def main():
                 st.info(f"**Recommended Email ID:** `{email}`")
             if url:
                 st.markdown(f"**Useful Link or Info:** [Click here]({url})" if url.startswith("http") else f"**Contact Info:** {url}")
+
+            st.subheader("📩 Ready-to-Copy Email to Student")
+            reply = generate_email_to_student(query, category, email)
+            st.code(reply, language='text')
         else:
             st.warning("Please enter a query to classify.")
 
